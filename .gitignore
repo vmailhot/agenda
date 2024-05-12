@@ -1,1 +1,4 @@
 venv/
+*.sqlite3
+agenda_project/agenda_app/migrations/
+*.pyc

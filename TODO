@@ -1,0 +1,14 @@
+ajouter un calendrier pour l'école
+    pédago/congé
+    entrer les périodes
+intégrer un todo
+
+
+modifier la couleur de chaque événement (couleur par défaut du calendrier et posibilité de modifier)
+ajouter le formulaire pour modifier les événements
+page pour ajouter des calendriers
+page pour ajouter un événement (popup dans page calendrier)
+flèches dans le calendrier pour changer de mois
+supprimer un calendrier
+supprimer un événement
+ajouter des rappels par courriel(sur serveur avec mailtrap)
