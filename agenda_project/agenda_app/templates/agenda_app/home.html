@@ -1,0 +1,106 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'agenda_app/css/style.css' %}">
+
+<h2>Month : {{ month }} {{ year }}</h2>
+
+<form method="get">
+    <select name="month">
+        <option value="1" {% if month == "January" %}selected{% endif %}>January</option>
+        <option value="2" {% if month == "February" %}selected{% endif %}>February</option>
+        <option value="3" {% if month == "March" %}selected{% endif %}>March</option>
+        <option value="4" {% if month == "April" %}selected{% endif %}>April</option>
+        <option value="5" {% if month == "May" %}selected{% endif %}>May</option>
+        <option value="6" {% if month == "June" %}selected{% endif %}>June</option>
+        <option value="7" {% if month == "July" %}selected{% endif %}>July</option>
+        <option value="8" {% if month == "August" %}selected{% endif %}>August</option>
+        <option value="9" {% if month == "September" %}selected{% endif %}>September</option>
+        <option value="10" {% if month == "October" %}selected{% endif %}>October</option>
+        <option value="11" {% if month == "November" %}selected{% endif %}>November</option>
+        <option value="12" {% if month == "December" %}selected{% endif %}>December</option>
+    </select>
+    <input type="text" name="year" value="{{ year }}">
+    <input type="submit" value="Submit">
+</form>
+
+<form id="myForm" method="post">
+    {% csrf_token %}
+    {% for calendar in calendars %}
+    <input type="checkbox" name="calendar_form" value="{{ calendar.id }}" {% if calendar.checked == True %}checked{% endif %} onchange="handleCheckboxChange(this);">
+    <a class="not-link" style="color: {{calendar.color }};" href="{% url 'update_calendar' calendar.id %}">{{ calendar.name }}</a>
+    {% endfor %}
+</form>
+
+<script>
+    function handleCheckboxChange(checkbox) {
+        document.getElementById('myForm').submit();
+    }
+</script>
+
+
+<table>
+    <thead>
+        <td>Sunday</td>
+        <td>Monday</td>
+        <td>Tuesday</td>
+        <td>Wednesday</td>
+        <td>Thursday</td>
+        <td>Friday</td>
+        <td>Saturday</td>
+    </thead>
+    <tbody>
+        {% for week in weeks_list %}
+            {% if week %}
+                <tr>
+                    {% for day in week %}
+                        {% for key, value in day.items %}
+                            <td>{{ key }}
+                            {% for event in events %}
+                                {% if event.date.day == key %}
+                                <li><a href="{% url 'event_detail' event.id %}" class="not-link" style="color: {{event.color}};">{{ event.name }} - {{ event.start_time }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                            </td>
+                    {% endfor %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p id="eventModalBody">Event details will be inserted here</p>
+    </div>
+  </div>
+<!--
+<script>
+    function openEventDetails(eventId) {
+        fetch("/event/detail/" + eventId)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('eventModalBody').innerHTML = data;
+                document.getElementById('eventModal').style.display = "block";
+            });
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            document.getElementById('eventModal').style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('eventModal')) {
+                document.getElementById('eventModal').style.display = "none";
+            }
+        }
+    }
+</script>-->
+
+<a href="{% url 'create_event' %}">Create Event</a>
