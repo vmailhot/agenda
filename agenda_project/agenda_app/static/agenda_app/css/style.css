@@ -19,11 +19,6 @@ table td:hover {
   background-color: #f5f5f5;
 }
 
-tr,
-td,
-th {
-  width: 14%;
-}
 
 /* The Modal (background) */
 .modal {
@@ -102,4 +97,57 @@ th {
 
 .not-link:hover {
   text-decoration: underline;
+}
+
+/*UPDATE TABLE STYLE*/
+
+#custom_table {
+  border-collapse: collapse;
+  width: 80%;
+  text-align: center;
+  margin: 0 auto;
+  font-size: medium;
+}
+
+#custom_table tr,
+#custom_table td,
+#custom_table th {
+  border: 1px solid #ddd;
+  width: 40%;
+  padding: 3px;
+  text-align: center;
+}
+
+#custom_table input,
+#custom_table select {
+  width: 100%;
+  display: inline-block;
+  border: none;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 8px;
+  font-size: medium;
+}
+
+#custom_table input:hover {
+  background-color: #f2f2f2;
+}
+
+.button {
+  display: block;
+  padding: 8px 16px;
+  margin: 10px auto;
+  width: auto;
+
+}
+
+#calendar {
+  width: 100%;
+}
+
+#calendar td,
+#calendar th,
+#calendar tr {
+  width: 13%;
+  text-align: center;
 }

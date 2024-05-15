@@ -1,0 +1,11 @@
+<h1>create school calendar</h1>
+
+{% for cycle, horaire in horaire_cours.items %}
+    <h3>cycle {{cycle}}</h3>
+    {% for date, periods in horaire.items %}
+        date {{date}}<br>
+        {% for period, matiere in periods.items %}
+        p{{period}} : {{matiere}}<br>
+        {% endfor %}
+    {% endfor %}
+{% endfor %}

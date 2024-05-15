@@ -2,7 +2,6 @@ from django.db import models
 
 class Calendar(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
     checked = models.BooleanField(default=False)
     class ColorChoice(models.TextChoices):
         RED = 'Red'
@@ -27,11 +26,12 @@ class Calendar(models.Model):
 class Event(models.Model):
     name = models.CharField(max_length=100)
     date = models.DateField()
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    description = models.TextField()
+    start_time = models.TimeField(blank=True, null=True)
+    end_time = models.TimeField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE)
     class ColorChoice(models.TextChoices):
+        DEFAULT = 'Default'
         RED = 'Red'
         BLUE = 'Blue'
         GREEN = 'Green'
@@ -44,7 +44,7 @@ class Event(models.Model):
         BLACK = 'Black'
 
     color = models.CharField(
-        max_length=6,
+        max_length=7,
         choices=ColorChoice.choices,
         default=ColorChoice.RED,
     )

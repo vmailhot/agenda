@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect
 from . import models
 from . import forms
 import datetime
+import random
 
 
 def home(request):
+    # get the calendars
     calendars = models.Calendar.objects.all()
-    events = models.Event.objects.all()
+
 
     # get month
     get_month = request.GET.get('month')
@@ -17,6 +19,10 @@ def home(request):
         # get current month as a word
         month = datetime.datetime.now().strftime('%B')
         get_month = datetime.datetime.now().strftime('%m')
+
+    events = models.Event.objects.filter(date__month=get_month)
+    print("events", events)
+
 
     # get year
     get_year = request.GET.get('year')
@@ -55,7 +61,7 @@ def home(request):
     calendars_objects = models.Calendar.objects.filter(id__in=calendar_list)
     print("calendar_objects", calendars_objects)
     # get the events for the calendars
-    events = models.Event.objects.filter(calendar__in=calendars_objects)
+    events = models.Event.objects.filter(calendar__in=calendars_objects, date__month=get_month, date__year=year)
 
     # days dict for the month
     days = {}
@@ -65,6 +71,9 @@ def home(request):
             days[i] = day.strftime('%A')
         except ValueError:
             break
+
+    # get the month as a number
+    month_number = int(get_month)
     
     week1 = []
     week2 = []
@@ -143,6 +152,7 @@ def home(request):
         "week5": week5,
         "week6": week6,
         "weeks_list": weeks_list,
+        "month_number": month_number
     })
 
 def event_detail(request, event_id):
@@ -182,5 +192,139 @@ def update_calendar(request, calendar_id):
             return redirect("home")
 
     return render(request, "agenda_app/calendar_update.html", {
+        "form": form,
+        "calendar": calendar
+    })
+
+def create_calendar(request):
+    form = forms.CalendarForm()
+    if request.method == "POST":
+        form = forms.CalendarForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+
+    return render(request, "agenda_app/create_calendar.html", {
         "form": form
     })
+
+def delete_calendar(request, calendar_id):
+    calendar = models.Calendar.objects.get(id=calendar_id)
+    calendar.delete()
+    return redirect("home")
+
+def delete_event(request, event_id):
+    event = models.Event.objects.get(id=event_id)
+    event.delete()
+    return redirect("home")
+
+def change_month(request, mode, month, year):
+    current_month = month
+    if current_month == 1:
+        if mode == "minus":
+            month = 12
+            year -= 1
+        elif mode == "plus":
+            month = 2
+    elif current_month == 12:
+        if mode == "minus":
+            month = 11
+        elif mode == "plus":
+            month = 1
+            year += 1
+    elif mode == "plus":
+        month = current_month + 1
+    elif mode == "minus":
+        month = current_month - 1
+    return redirect(f"/?month={month}&year={year}")
+
+def create_school_calendar(request):
+    # duree d'un cycle
+    duree_cycle = 9
+    # n periodes par jour
+    n_periodes = 4
+    periodes_dict = {
+        1 : ["8:00", "9:15"],
+        2 : ["9:30", "10:45"],
+        3 : ["11:00", "12:15"],
+        4 : ["13:25", "14:40"]
+    }
+    # debut/fin annee scolaire
+    debut = "2023-08-31"
+    fin = "2023-10-31"
+
+    # cree un dict avec tous les jours d'ecole possible entre debut et fin (pas de fin de semaine)
+    jours = {}
+    current_date = datetime.datetime.strptime(debut, "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(fin, "%Y-%m-%d")
+
+    # congee list
+    congees_list = ["2023-09-04", "2023-09-22", "2023-10-09", "2023-10-25"]
+
+    n = 1
+    while current_date <= end_date:
+        if n == 10: n = 1
+        if current_date.weekday() < 5:  # Monday to Friday
+            current_date_formated = current_date.strftime("%Y-%m-%d")
+            if current_date_formated in congees_list:
+                pass
+            else:
+                jours[current_date_formated] = n
+                n += 1
+        current_date += datetime.timedelta(days=1)
+
+    horaire = {}
+    n_cycle = 0
+    for date, jour in jours.items():
+        if jour == 1:
+            n_cycle += 1
+            horaire[n_cycle] = [date]
+        else:
+            horaire[n_cycle].append(date)
+
+
+
+    # liste des matieres
+    liste_matieres = ["francais, anglais, histoire, math, science, art, ppp, edu"]    
+    # horaire du cycle
+    # {numero du cycle : {date1 : {p1 : matiere, p2 : matiere, p3 : matiere, p4 : matiere}, date2 : {p1 : matiere, p2 : matiere, p3 : matiere, p4 : matiere}}
+    # {1 : {
+    #            2023-08-31 : {
+    #                           1 :"francais",
+    #                           2 : "math",
+    #                           3 : "histoire",
+    #                           4 : "art",
+    #                         },   
+    #            2023-09-01 : {
+    #                           1 :"ppp",
+    #                           2 : "science",
+    #                           3 : "francais",
+    #                           4 : "edu",
+    #                         }
+    #        }
+
+    print(horaire, "\n", "*"*50)
+    horaire_cours = {}
+    for cycle, dates in horaire.items():
+        for date in dates:
+            # get the matiere
+            matiere_dict = {}
+            for i in range(1, 5):
+                matiere_dict[i] = "ppp"
+            new_dict = {}
+            new_dict[date] = matiere_dict
+            if cycle not in horaire_cours:
+                horaire_cours[cycle] = new_dict
+            else:
+                horaire_cours[cycle].update(new_dict)
+
+    for key, value in horaire_cours.items():
+        print(key, value)
+    
+    
+
+
+    return render(request, "agenda_app/create_school_calendar.html", {
+        "horaire_cours" : horaire_cours
+    })
+    

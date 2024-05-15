@@ -1,10 +1,42 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'agenda_app/css/style.css' %}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <h2>Create Event</h2>
 
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p}}
-    <input type="submit" value="Submit">
+    <table id="custom_table">
+        {{ form.checked.as_hidden }}
+        <tr>
+            <td>Name</td>
+            <td>{{ form.name }}</td>
+        </tr>
+        <tr>
+            <td>Date</td>
+            <td><input type="date" name="date" value="{{ event.date }}"></td>
+        </tr>
+        <tr>
+            <td>Start Time</td>
+            <td><input type="time" name="start_time" value="{{ event.start_time }}"></td>
+        </tr>
+        <tr>
+            <td>End Time</td>
+            <td><input type="time" name="end_time" value="{{ event.end_time }}"></td>
+        </tr>
+        <tr>
+            <td>Color</td>
+            <td>{{ form.color }}</td>
+        </tr>
+        <tr>
+            <td>Calendar</td>
+            <td>{{ form.calendar }}</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td><input type="text" name="description" value="{{ event.description }}"></td>
+        </tr>
+    </table>
+    <input type="submit" value="Update" class="button">
 </form>

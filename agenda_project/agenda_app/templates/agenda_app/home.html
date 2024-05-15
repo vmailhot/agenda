@@ -1,5 +1,7 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'agenda_app/css/style.css' %}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <h2>Month : {{ month }} {{ year }}</h2>
 
@@ -22,6 +24,10 @@
     <input type="submit" value="Submit">
 </form>
 
+<a href="{% url 'change_month' 'minus' month_number year %}"><-- Previous Month</a>
+<a href="{% url 'change_month' 'plus' month_number year %}">Next Month --></a>
+
+
 <form id="myForm" method="post">
     {% csrf_token %}
     {% for calendar in calendars %}
@@ -37,15 +43,15 @@
 </script>
 
 
-<table>
+<table id="calendar">
     <thead>
-        <td>Sunday</td>
-        <td>Monday</td>
-        <td>Tuesday</td>
-        <td>Wednesday</td>
-        <td>Thursday</td>
-        <td>Friday</td>
-        <td>Saturday</td>
+        <td>D</td>
+        <td>L</td>
+        <td>M</td>
+        <td>M</td>
+        <td>J</td>
+        <td>V</td>
+        <td>S</td>
     </thead>
     <tbody>
         {% for week in weeks_list %}
@@ -56,7 +62,7 @@
                             <td>{{ key }}
                             {% for event in events %}
                                 {% if event.date.day == key %}
-                                <li><a href="{% url 'event_detail' event.id %}" class="not-link" style="color: {{event.color}};">{{ event.name }} - {{ event.start_time }}</a></li>
+                                <br><a href="{% url 'event_detail' event.id %}" class="not-link" {% if event.color == "Default" %}style="color: {{event.calendar.color}};"{% else %}style="color: {{event.color}};"{% endif %} style="font-size: 10px;">{{ event.name|slice:":6" }}</a>
                                 {% endif %}
                             {% endfor %}
                         {% endfor %}
@@ -76,31 +82,7 @@
       <p id="eventModalBody">Event details will be inserted here</p>
     </div>
   </div>
-<!--
-<script>
-    function openEventDetails(eventId) {
-        fetch("/event/detail/" + eventId)
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('eventModalBody').innerHTML = data;
-                document.getElementById('eventModal').style.display = "block";
-            });
 
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-            document.getElementById('eventModal').style.display = "none";
-        }
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('eventModal')) {
-                document.getElementById('eventModal').style.display = "none";
-            }
-        }
-    }
-</script>-->
 
 <a href="{% url 'create_event' %}">Create Event</a>
+<a href="{% url 'create_calendar' %}">Create Calendar</a>

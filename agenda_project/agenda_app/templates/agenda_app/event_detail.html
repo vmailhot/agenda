@@ -1,8 +1,47 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'agenda_app/css/style.css' %}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
 <h1>{{ event.name }}</h1>
-<h3>{{ event.calendar.name }}</h3>
+<h3>Calendar : {{ event.calendar.name }}</h3>
 
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p}}
-    <input type="submit" value="update">
+    <table id="custom_table">
+        {{ form.checked.as_hidden }}
+        <tr>
+            <td>Name</td>
+            <td>{{ form.name }}</td>
+        </tr>
+        <tr>
+            <td>Date</td>
+            <td>{{ form.date }}</td>
+        </tr>
+        <tr>
+            <td>Start Time</td>
+            <td>{{ form.start_time }}</td>
+        </tr>
+        <tr>
+            <td>End Time</td>
+            <td>{{ form.end_time }}</td>
+        </tr>
+        <tr>
+            <td>Color</td>
+            <td>{{ form.color }}</td>
+        </tr>
+        <tr>
+            <td>Calendar</td>
+            <td>{{ form.calendar }}</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td><input type="text" name="description" value="{{ event.description }}"></td>
+        </tr>
+    </table>
+    <input type="submit" value="Update" class="button">
 </form>
+
+<a href="{% url 'delete_event' event.id %}" onclick="return confirm('Are you sure you want to delete this event?')">Delete</a>
