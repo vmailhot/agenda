@@ -1,0 +1,16 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'agenda_app/css/style.css' %}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<h1>create school day off</h1>
+<form method="post">
+        {% csrf_token %}
+        <label for="date">Date</label>
+        <input type="date" name="date" autofocus>
+        <input type="hidden" name="school_calendar" value="{{school_calendar_id}}"><br>
+    <button type="submit">Add day off</button>
+</form>
+
+<a href="{% url 'create_school_schedule' school_calendar_id %}">Stop adding day off</a>

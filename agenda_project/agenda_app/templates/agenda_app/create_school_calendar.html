@@ -1,5 +1,11 @@
-<h1>create school calendar</h1>
+{% load static %}
 
+<link rel="stylesheet" type="text/css" href="{% static 'agenda_app/css/style.css' %}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<h1>create school calendar</h1>
+<!--
 {% for cycle, horaire in horaire_cours.items %}
     <h3>cycle {{cycle}}</h3>
     {% for date, periods in horaire.items %}
@@ -9,3 +15,31 @@
         {% endfor %}
     {% endfor %}
 {% endfor %}
+-->
+
+<form method="post">
+    {% csrf_token %}
+    <table id="custom_table">
+        <tr>
+            <td>Name</td>
+            <td><input type="text" name="name"></td>
+        </tr>
+        <tr>
+            <td>Start Date</td>
+            <td><input type="date" name="start_date"></td>
+        </tr>
+        <tr>
+            <td>End Date</td>
+            <td><input type="date" name="end_date"></td>
+        </tr>
+        <tr>
+            <td>Number of day per cycle</td>
+            <td><input type="text" name="n_day_cycle"></td>
+        </tr>
+        <tr>
+            <td>Number of period per day</td>
+            <td><input type="text" name="n_period_day"></td>
+        </tr>
+    </table>
+    <button type="submit">Create School Calendar</button>
+</form>

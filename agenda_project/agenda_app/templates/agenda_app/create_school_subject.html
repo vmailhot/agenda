@@ -1,0 +1,18 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'agenda_app/css/style.css' %}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<h1>create school subject</h1>
+<form method="post">
+        {% csrf_token %}
+        <label for="name">Name</label>
+        <input type="text" name="name" autofocus>
+        <label for="color">Color</label>
+        <input type="text" name="color">
+        <input type="hidden" name="school_calendar" value="{{school_calendar_id}}"><br>
+    <button type="submit">Create School Period</button>
+</form>
+
+<a href="{% url 'create_school_day_off' school_calendar_id %}">Stop adding subject</a>

@@ -320,11 +320,117 @@ def create_school_calendar(request):
 
     for key, value in horaire_cours.items():
         print(key, value)
+
+    
+    # handle the POST request with the forms.SchoolCalendarForm
+    if request.method == "POST":
+        form = forms.SchoolCalendarForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # get the last school calendar id
+            school_calendar = models.SchoolCalendar.objects.last()
+            return redirect("create_school_period", school_calendar.id)
+    else:
+        form = forms.SchoolCalendarForm()
+
+
     
     
 
 
     return render(request, "agenda_app/create_school_calendar.html", {
-        "horaire_cours" : horaire_cours
+        "horaire_cours" : horaire_cours,
+        "form": form
     })
     
+def create_school_period(request, school_calendar_id):
+
+    school_calendar = models.SchoolCalendar.objects.get(id=school_calendar_id)
+    number_of_period_added = int(models.SchoolPeriod.objects.filter(school_calendar=school_calendar).count()) + 1
+    if number_of_period_added >= school_calendar.n_period_day:
+        return redirect("create_school_subject", school_calendar.id)
+    if request.method == "POST":
+        print("POST")
+        form = forms.SchoolPeriodForm(request.POST)
+        print(form)
+        if form.is_valid():
+            form.save()
+            if models.SchoolPeriod.objects.filter(school_calendar=school_calendar).count() == school_calendar.n_period_day:
+                return redirect("create_school_subject", school_calendar.id)
+            return redirect("create_school_period", school_calendar.id)
+    else:
+        form = forms.SchoolPeriodForm()
+
+    return render(request, "agenda_app/create_school_period.html", {
+        "form": form,
+        "school_calendar": school_calendar,
+        "number_of_period_added": number_of_period_added
+    })
+
+def create_school_subject(request, school_calendar_id):
+    if request.method == "POST":
+        form = forms.SchoolSubjectForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("create_school_subject", school_calendar_id)
+    else:
+        form = forms.SchoolSubjectForm()
+    return render(request, "agenda_app/create_school_subject.html", {
+        "form": form,
+        "school_calendar_id": school_calendar_id
+    })
+
+def create_school_day_off(request, school_calendar_id):
+    if request.method == "POST":
+        form = forms.SchoolDayOffForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("create_school_day_off", school_calendar_id)
+    else:
+        form = forms.SchoolDayOffForm()
+    return render(request, "agenda_app/create_school_day_off.html", {
+        "form": form,
+        "school_calendar_id": school_calendar_id
+    })
+
+def create_school_schedule(request, school_calendar_id):
+    if models.SchoolSchedule.objects.filter(school_calendar=school_calendar_id).count() >= models.SchoolCalendar.objects.get(id=school_calendar_id).n_day_cycle:
+        return redirect("home")
+    # get all the subjects
+    school_calendar = models.SchoolCalendar.objects.get(id=school_calendar_id)
+    school_subjects = models.SchoolSubject.objects.filter(school_calendar=school_calendar)
+    school_periods = models.SchoolPeriod.objects.filter(school_calendar=school_calendar)
+
+    try:
+        n_day = models.SchoolSchedule.objects.filter(school_calendar=school_calendar).count() + 1
+    
+    except:
+        n_day = 1
+
+    # handel the POST request with the forms.SchoolScheduleForm
+    if request.method == "POST":
+        form = request.POST
+        print(form)
+        for field in form:
+            print(field)
+            # if the field start with "period_"
+            if field.startswith("period_"):
+                form_subject_id = form[field]
+                form_period_id = field.split("_")[1]
+        form_n_day = form["n_day"]
+        form_school_calendar_id = form["school_calendar"]
+        form_school_period = models.SchoolPeriod.objects.get(id=form_period_id)
+        form_school_subject = models.SchoolSubject.objects.get(id=form_subject_id)
+        models.SchoolSchedule.objects.create(
+            n_day=form_n_day,
+            school_calendar=models.SchoolCalendar.objects.get(id=form_school_calendar_id),
+            school_period=form_school_period,
+            school_subject=form_school_subject
+        )
+        return redirect("create_school_schedule", school_calendar_id)
+    return render(request, "agenda_app/create_school_schedule.html", {
+        "school_calendar": school_calendar,
+        "school_subjects": school_subjects,
+        "school_periods": school_periods,
+        "n_day": n_day
+    })

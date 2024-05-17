@@ -1,0 +1,22 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'agenda_app/css/style.css' %}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<h1>create school schedule</h1>
+<form method="post">
+        {% csrf_token %}
+        <h3>Period {{ n_day }} / {{ school_calendar.n_day_cycle }}</h3>
+        <input type="hidden" name="n_day" value="{{n_day}}">
+        <input type="hidden" name="school_calendar" value="{{school_calendar.id}}"><br>
+        {% for p in school_periods %}
+            <label>{{p.name}}</label>
+            <select name="period_{{p.id}}">
+                {% for s in school_subjects %}
+                    <option value="{{s.id}}">{{s.name}}</option>
+                {% endfor %}
+            </select><br>
+        {% endfor %}
+        <button type="submit">Create School Period</button>
+</form>

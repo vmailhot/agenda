@@ -12,5 +12,9 @@ urlpatterns = [
 
     path("change_month/<str:mode>/<int:month>/<int:year>/", views.change_month, name="change_month"),
 
-    path("create_school_calendar/", views.create_school_calendar, name="create_school_calendar")
+    path("create_school_calendar/", views.create_school_calendar, name="create_school_calendar"),
+    path("create_school_period/<int:school_calendar_id>/", views.create_school_period, name="create_school_period"),
+    path("create_school_subject/<int:school_calendar_id>/", views.create_school_subject, name="create_school_subject"),
+    path("create_school_day_off/<int:school_calendar_id>/", views.create_school_day_off, name="create_school_day_off"),
+    path("create_school_schedule/<int:school_calendar_id>/", views.create_school_schedule, name="create_school_schedule"),
 ]
