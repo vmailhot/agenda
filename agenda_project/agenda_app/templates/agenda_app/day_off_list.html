@@ -1,0 +1,33 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'agenda_app/css/style.css' %}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<h1>Day Off To Take</h1>
+
+<table>
+    <thead>
+        <td>Date</td>
+        <td>Time</td>
+        <td>Name</td>
+        <td>Calendar</td>
+        <td>Took ?</td>
+    </thead>
+    <tbody>
+        {% for event in day_off_list %}
+            <tr>
+                <td>{{ event.date }}</td>
+                <td>{{ event.start_time }} - {{ event.end_time }}</td>
+                <td>{{ event.name }}</td>
+                <td>{{ event.calendar.name }}</td>
+                <td>
+                    {% if event.day_off_took %}
+                    <a href="{% url 'create_day_off' event.id %}" onclick="return confirm('Do you want to untake the day off ?');">Untake</a>
+                        {% else %}
+                        <a href="{% url 'create_day_off' event.id %}" onclick="return confirm('Do you want to take the day off ?');">Take</a>
+                        {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

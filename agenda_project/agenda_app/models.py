@@ -48,6 +48,8 @@ class Event(models.Model):
         choices=ColorChoice.choices,
         default=ColorChoice.RED,
     )
+    need_day_off = models.BooleanField(default=False)
+    day_off_took = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

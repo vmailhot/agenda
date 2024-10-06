@@ -434,3 +434,25 @@ def create_school_schedule(request, school_calendar_id):
         "school_periods": school_periods,
         "n_day": n_day
     })
+
+def day_off_list(request):
+    day_off_list = []
+    events = models.Event.objects.all()
+    for event in events:
+        if event.need_day_off:
+            day_off_list.append(event)
+    # sort the list
+    day_off_list.sort(key=lambda x: x.date)
+
+    return render(request, "agenda_app/day_off_list.html", {
+        "day_off_list": day_off_list
+    })
+
+def create_day_off(request, event_id):
+    event = models.Event.objects.get(id=event_id)
+    if event.day_off_took:
+        event.day_off_took = False
+    else:
+        event.day_off_took = True
+    event.save()
+    return redirect("day_off_list")
